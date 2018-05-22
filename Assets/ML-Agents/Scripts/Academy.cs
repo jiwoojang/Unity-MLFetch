@@ -423,7 +423,7 @@ public abstract class Academy : MonoBehaviour
     /// Performs a single environment update to the Academy, Brain and Agent
     /// objects within the environment.
     /// </summary>
-    void EnvironmentStep()
+    public void EnvironmentStep()
     {
         if (modeSwitched)
         {

@@ -7,4 +7,8 @@ using UnityEngine;
 /// </summary>
 public class FetchAcademy : Academy {
 
+    //private void FixedUpdate() {
+    //    if (/*The stick has touched the ground*/)
+    //        EnvironmentStep();
+    //}
 }

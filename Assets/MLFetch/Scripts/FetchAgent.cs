@@ -15,7 +15,8 @@ public class FetchAgent : Agent {
     private Transform _target;
     private float _previousTargetDistance = float.MaxValue;
 
-	void Start () {
+
+    void Start () {
         // Capture the starting transform
         _startPosition = transform.position;
         _target = _stickThrower.stick.transform;
@@ -24,25 +25,28 @@ public class FetchAgent : Agent {
         _agentRigidbody = GetComponent<Rigidbody>();
 
         // Fetch!
-        _stickThrower.RandomizeAndThrow();
-	}
+        //_stickThrower.RandomizeAndThrow();
+        _stickThrower.stick.transform.position = new Vector3(_floorTransform.position.x + Random.value * 8 - 4, _floorTransform.position.y + 0.5f, _floorTransform.position.z + Random.value * 8 - 4);
+
+    }
 
     // Collects observations about the world
-	public override void CollectObservations() {
+    public override void CollectObservations() {
         // Get relative position to stick
         Vector3 relativePosition = _target.position - transform.position;
 
-        AddVectorObs(relativePosition.x / 15f);
-        AddVectorObs(relativePosition.y / 15f);
+        // Note all values here are normalized to the size of the space
+        AddVectorObs(relativePosition.x / 5f);
+        AddVectorObs(relativePosition.z / 5f);
 
-        AddVectorObs((transform.position.x + 7.5f) / 15);
-        AddVectorObs((transform.position.x - 7.5f) / 15);
-        AddVectorObs((transform.position.z + 7.5f) / 15);
-        AddVectorObs((transform.position.z - 7.5f) / 15);
+        AddVectorObs((transform.position.x + 5f) / 5);
+        AddVectorObs((transform.position.x - 5f) / 5);
+        AddVectorObs((transform.position.z + 5f) / 5);
+        AddVectorObs((transform.position.z - 5f) / 5);
 
         // Observe agent velocity as not to overshoot
-        AddVectorObs(_agentRigidbody.velocity.x / 15f);
-        AddVectorObs(_agentRigidbody.velocity.y / 15f);
+        AddVectorObs(_agentRigidbody.velocity.x / 5f);
+        AddVectorObs(_agentRigidbody.velocity.z / 5f);
 	}
 
 	// Lights, camera, action!
@@ -55,38 +59,38 @@ public class FetchAgent : Agent {
         if (!_stickThrower.stick.hasBeenFetched){
             
             // We got the stick, switch targets and come back
-            if (distancetoTarget < 1.0f) {
+            if (distancetoTarget < 0.75f) {
+                // Got the stick, now come back
+                AddReward(1.0f);
+
                 _stickThrower.stick.hasBeenFetched = true;
                 _target.position = _startPosition;
 
                 // Reset the distance
-                _previousTargetDistance = float.MaxValue;
-
-                // REMOVE THIS LATER TO ENABLE RETRIEVE
-                Done();
-                AddReward(4.0f);
+                _previousTargetDistance = Vector3.Distance(transform.position, _target.position);
             }
         } else {
-            if (distancetoTarget < 1.0f){
-                // Big bonus points for making it back AFTER fetching the stick
+            // More lenient criteria for making it back home
+            if (distancetoTarget < 0.75f) {
+                // Reward for making it back AFTER fetching the stick
                 Done();
-                AddReward(10.0f);
+                AddReward(1.0f);
             }
         }
 
         // Get closer to the target
         if (distancetoTarget < _previousTargetDistance){
-            AddReward(0.2f);
+            AddReward(0.1f);
         }
 
         // Dont fall off the ledge 
         if ((transform.position.y - _floorTransform.position.y) < 0) {
             Done();
-            AddReward(-8.0f);
+            AddReward(-1.0f);
         }
 
         // Time penalty, do it quickly!
-        AddReward(-0.1f);
+        AddReward(-0.05f);
 
         // Cache the distance to target
         _previousTargetDistance = distancetoTarget;
@@ -110,7 +114,8 @@ public class FetchAgent : Agent {
             _stickThrower.ResetStickThrower();
 
             // Reset physics
-            transform.position = _startPosition;
+            //transform.position = _startPosition;
+            transform.position = _floorTransform.position;
 
             //transform.position = new Vector3 (_floorTransform.position.x + Random.Range(-10f, 10f), _startPosition.y, _floorTransform.position.z + Random.Range(-10f, 10f));
             transform.rotation = Quaternion.identity;
@@ -119,8 +124,10 @@ public class FetchAgent : Agent {
             _agentRigidbody.velocity = Vector3.zero;
 
             // Throw the stick again!
-            _stickThrower.RandomizeAndThrow();
+            //_stickThrower.RandomizeAndThrow();
 
+            // Randomize stick position
+            _stickThrower.stick.transform.position = new Vector3(_floorTransform.position.x + Random.value * 8 - 4, _floorTransform.position.y + 0.5f, _floorTransform.position.z + Random.value * 8 - 4);
             _target = _stickThrower.stick.transform;
         }
 	}

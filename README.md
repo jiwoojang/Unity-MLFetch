@@ -14,3 +14,6 @@ The results of the training using the MLFetchTrain scene are summarized below us
 A demo gif of the project can be seen below, fetching the thrown "stick"
 
 <img src="Docs/demogif.gif" align="middle" width="500"/>
+
+## Technologies used: 
+C#, Unity, Tensorflow, Python, Jupyter, Anaconda

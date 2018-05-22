@@ -48,7 +48,7 @@ public class StickThrower : MonoBehaviour {
         float verticalRotation = Random.Range(0f, _verticalAngleRange);
 
         // Randomize force
-        float randomizedForceMagnitude = Random.Range(_forceMax, _forceMax);
+        float randomizedForceMagnitude = Random.Range(_forceMax / 2, _forceMax);
                                                
         // Apply the randomized angles relative to the current transform;
         Quaternion randomizedRotation = transform.rotation * Quaternion.Euler(verticalRotation,horizontalRotation,0);
@@ -61,6 +61,7 @@ public class StickThrower : MonoBehaviour {
     public void ThrowStick(Vector3 direction, float magnitude) {
         // We use impulse here because its just one initial throwing force
         stick.stickRigidbody.AddForce(direction.normalized * magnitude, ForceMode.Impulse);
+        stick.stickRigidbody.AddTorque(direction.normalized * magnitude, ForceMode.Impulse);
     }
 
     public void ResetStickThrower(){

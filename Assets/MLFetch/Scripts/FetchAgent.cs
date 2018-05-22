@@ -9,6 +9,7 @@ public class FetchAgent : Agent {
     [SerializeField] private StickThrower _stickThrower;
     [SerializeField] private float _fetchSpeed;
     [SerializeField] private Transform _floorTransform;
+    [SerializeField] private float _repositionFactor = 1.0f;
 
     private Rigidbody _agentRigidbody;
     private Vector3 _startPosition;
@@ -25,9 +26,8 @@ public class FetchAgent : Agent {
         _agentRigidbody = GetComponent<Rigidbody>();
 
         // Fetch!
-        //_stickThrower.RandomizeAndThrow();
+        _stickThrower.RandomizeAndThrow();
         _stickThrower.stick.transform.position = new Vector3(_floorTransform.position.x + Random.value * 8 - 4, _floorTransform.position.y + 0.5f, _floorTransform.position.z + Random.value * 8 - 4);
-
     }
 
     // Collects observations about the world
@@ -59,7 +59,7 @@ public class FetchAgent : Agent {
         if (!_stickThrower.stick.hasBeenFetched){
             
             // We got the stick, switch targets and come back
-            if (distancetoTarget < 0.75f) {
+            if (distancetoTarget < 1.5f) {
                 // Got the stick, now come back
                 AddReward(1.0f);
 
@@ -71,7 +71,7 @@ public class FetchAgent : Agent {
             }
         } else {
             // More lenient criteria for making it back home
-            if (distancetoTarget < 0.75f) {
+            if (distancetoTarget < 1.5f) {
                 // Reward for making it back AFTER fetching the stick
                 Done();
                 AddReward(1.0f);
@@ -102,7 +102,8 @@ public class FetchAgent : Agent {
         movementAction.z = Mathf.Clamp(vectorAction[1], -1, 1);
 
         // Move the agent
-        _agentRigidbody.AddForce(movementAction * _fetchSpeed);
+        //_agentRigidbody.AddForce(movementAction * _fetchSpeed);
+        transform.position = Vector3.Lerp(transform.position, transform.position + movementAction, Time.deltaTime * _fetchSpeed);
 	}
 
 	// Reset function
@@ -114,20 +115,17 @@ public class FetchAgent : Agent {
             _stickThrower.ResetStickThrower();
 
             // Reset physics
-            //transform.position = _startPosition;
-            transform.position = _floorTransform.position;
-
-            //transform.position = new Vector3 (_floorTransform.position.x + Random.Range(-10f, 10f), _startPosition.y, _floorTransform.position.z + Random.Range(-10f, 10f));
+            transform.position = _startPosition;
             transform.rotation = Quaternion.identity;
 
             _agentRigidbody.angularVelocity = Vector3.zero;
             _agentRigidbody.velocity = Vector3.zero;
 
             // Throw the stick again!
-            //_stickThrower.RandomizeAndThrow();
+            _stickThrower.RandomizeAndThrow();
 
             // Randomize stick position
-            _stickThrower.stick.transform.position = new Vector3(_floorTransform.position.x + Random.value * 8 - 4, _floorTransform.position.y + 0.5f, _floorTransform.position.z + Random.value * 8 - 4);
+            //_stickThrower.stick.transform.position = new Vector3(_floorTransform.position.x + Random.value * _repositionFactor - (_repositionFactor / 2f), _floorTransform.position.y + 0.5f, _floorTransform.position.z + Random.value * _repositionFactor - (_repositionFactor / 2f));
             _target = _stickThrower.stick.transform;
         }
 	}

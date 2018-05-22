@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/ML-Agents/Examples/3DBall/3DBall.unity
     guid: 6f62a2ccb3830437ea4e85a617e856b3
-  - enabled: 1
+  - enabled: 0
     path: Assets/MLFetch/MLFetch.unity
     guid: e1085c6de9f6247a5af85080d55995db
+  - enabled: 0
+    path: Assets/MLFetch/MLFetchTrain.unity
+    guid: 339fd5644493b98499ddf8fee5ed3054
+  - enabled: 1
+    path: Assets/MLFetch/MLFetchPlay.unity
+    guid: 77c78095f9e13c041b050a3a3a18faa1
